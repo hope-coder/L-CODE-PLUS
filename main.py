@@ -27,8 +27,8 @@ def L_Code():
     threshold = 0.99
 
     # 构造可解释模型以及漂移检测器
-    shap_model = object_model(window_size, test_size, shap_class=shap_class, dataset=dataset, external=True)
-    detector = drift_detect(X_train=shap_model.X_middle_train, window_size=window_size, alpha=alpha,
+    shap_model = object_model(window_size, test_size, shap_class=shap_class, dataset=dataset, external=False)
+    detector = drift_detect(X_train=shap_model.X_train, window_size=window_size, alpha=alpha,
                             threshold=threshold)
 
     # 进行特征的过滤
@@ -106,7 +106,7 @@ def L_Code_Plus(window_size, test_size, shap_class, dataset, alpha, threshold):
     # 构造可解释模型以及漂移检测器
     shap_model = object_model(window_size, test_size, shap_class=shap_class, dataset=dataset, external=True)
     detector = drift_detect(X_train=shap_model.X_middle_train, window_size=window_size, alpha=alpha,
-                            threshold=threshold)
+                            threshold=threshold,external=True)
 
     # 进行特征的过滤
     X_train, shap = shap_model.getTrain()
@@ -150,9 +150,9 @@ def L_Code_Plus(window_size, test_size, shap_class, dataset, alpha, threshold):
             expected_mean, expected_std = detector.expected_shap_dist(ref_stats_table[feature],
                                                                       detect_stats_table[feature])
 
-            print("\t 参考窗口统计值：", temp_ref_stats.loc[feature]["mean"], temp_ref_stats.loc[feature]["std"])
-            print("\t 期望数据统计值", expected_mean, expected_std)
-            print("\t 检测窗口统计值", temp_detect_stats.loc[feature]["mean"], temp_detect_stats.loc[feature]["std"])
+            # print("\t 参考窗口统计值：", temp_ref_stats.loc[feature]["mean"], temp_ref_stats.loc[feature]["std"])
+            # print("\t 期望数据统计值", expected_mean, expected_std)
+            # print("\t 检测窗口统计值", temp_detect_stats.loc[feature]["mean"], temp_detect_stats.loc[feature]["std"])
 
             p_value, drift_warning = detector.t_test(expected_mean, expected_std,
                                                      temp_detect_stats.loc[feature]["mean"],
@@ -191,7 +191,7 @@ if __name__ == '__main__':
     window_size = 600
     test_size = 0.6
     shap_class = 0
-    dataset = "phishing"
+    dataset = "RBF"
     alpha = 0.01
     threshold = 0.99
     for i in range(1):
